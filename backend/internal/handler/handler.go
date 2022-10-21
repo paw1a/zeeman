@@ -3,15 +3,15 @@ package handler
 import (
 	"bytes"
 	"fmt"
-	"github.com/paw1a/interferometer/internal/interferometer"
+	"github.com/paw1a/interferometer/backend/internal/interferometer"
 	"image/png"
 	"net/http"
 )
 
 func GetImage(w http.ResponseWriter, r *http.Request) {
 	params := interferometer.Params{
-		Resolution:             500,
-		PictureSize:            5,
+		Resolution:             2000,
+		PictureSize:            30,
 		WaveLength:             532,
 		FocalDistance:          100,
 		GlassesDistance:        2,

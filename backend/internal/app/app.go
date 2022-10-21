@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/paw1a/interferometer/internal/handler"
+	"github.com/paw1a/interferometer/backend/internal/handler"
 	"log"
 	"net/http"
 )
