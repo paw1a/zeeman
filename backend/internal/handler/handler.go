@@ -2,28 +2,64 @@ package handler
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/paw1a/interferometer/backend/internal/interferometer"
 	"image/png"
 	"net/http"
 )
 
+type GetImageResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+type GetImageRequest struct {
+	Resolution       int     `json:"resolution" validate:"required,min=1"`
+	PictureSize      float64 `json:"pictureSize" validate:"required,min=0"`
+	WaveLength       float64 `json:"waveLength" validate:"required,min=0"`
+	FocalDistance    float64 `json:"focalDistance" validate:"required,min=0"`
+	GlassesDistance  float64 `json:"glassesDistance" validate:"required,min=0"`
+	PathDifference   float64 `json:"pathDifference" validate:"min=0"`
+	RefractionFactor float64 `json:"refractionFactor" validate:"required,min=1"`
+	ReflectionFactor float64 `json:"reflectionFactor" validate:"required,min=0,max=1"`
+}
+
 func GetImage(w http.ResponseWriter, r *http.Request) {
-	params := interferometer.Params{
-		Resolution:             2000,
-		PictureSize:            30,
-		WaveLength:             532,
-		FocalDistance:          100,
-		GlassesDistance:        2,
-		PathDifference:         10,
-		RefractionFactor:       1.375,
-		ReflectionFactor:       0.7,
-		IncidentLightIntensity: 10,
+	if r.Method != "POST" {
+		errorResponse(w, errors.New("post method expected"), http.StatusMethodNotAllowed)
+		return
 	}
-	img := interferometer.CreateImage(params)
+
+	// Enable CORS
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var request GetImageRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&request); err != nil {
+		errorResponse(w, fmt.Errorf("request decode error: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	validate := validator.New()
+	err := validate.Struct(request)
+	if err != nil {
+		errorResponse(w, fmt.Errorf("validate error: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	img := interferometer.CreateImage(requestToParams(request))
 
 	buffer := new(bytes.Buffer)
-	err := png.Encode(buffer, img)
+	err = png.Encode(buffer, img)
 	if err != nil {
 		fmt.Printf("can't encode image pixels")
 		return
@@ -33,6 +69,28 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Write(data)
+}
 
-	return
+func errorResponse(w http.ResponseWriter, err error, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	resp := GetImageResponse{
+		Status:  statusCode,
+		Message: err.Error(),
+	}
+	json.NewEncoder(w).Encode(resp)
+}
+
+func requestToParams(request GetImageRequest) interferometer.Params {
+	return interferometer.Params{
+		Resolution:             request.Resolution,
+		PictureSize:            request.PictureSize,
+		WaveLength:             request.WaveLength,
+		FocalDistance:          request.FocalDistance,
+		GlassesDistance:        request.GlassesDistance,
+		PathDifference:         request.PathDifference,
+		RefractionFactor:       request.RefractionFactor,
+		ReflectionFactor:       request.ReflectionFactor,
+		IncidentLightIntensity: 10,
+	}
 }
