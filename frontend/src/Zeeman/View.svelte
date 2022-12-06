@@ -1,4 +1,5 @@
 <div id="view" class="col-md-8 order-md-1">
+  <!-- TODO: Picture adaptivity -->
   <img src="/sample.png" class="float-left" alt="view"/>
 </div>
 

@@ -1,4 +1,4 @@
-<footer class="fixed-bottom mt-auto py-4">
+<footer class="fixed-bottom mt-auto py-2">
   СЭЛФ, 2022 г.
   <a class="nav-link" href="https://github.com/paw1a/zeeman">Github</a>
 </footer>
