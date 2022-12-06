@@ -1,4 +1,6 @@
 <div class="col-md-4 order-md-2">
+  <h4 style="margin-top: 2rem;">Параметры эксперимента</h4>
+
   <form class="needs-validation " novalidate="">
     <div class="mb-3">
       <label for="waveLength">Длина волны</label>
@@ -24,6 +26,11 @@
       <label for="magneticInduction">Магнитная индукция</label>
       <input id="magneticInduction" class="form-control" type="text" placeholder="0.0" value="" required="">
     </div>
-    <button class="btn btn-primary">Показать результат</button>
+    <button class="btn btn-primary" on:click={submitForm}>Показать результат</button>
   </form>
 </div>
+
+<script>
+  const submitForm = e => {
+  };
+</script>
