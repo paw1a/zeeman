@@ -1,5 +1,5 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="navbar">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="navbar">
     <a class="navbar-brand" href="#">
       <img src="/bmstu.webp" id="navbar-logo" />
       Эффект Зеемана

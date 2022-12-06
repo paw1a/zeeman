@@ -1,10 +1,11 @@
-<footer class="fixed-bottom mt-auto py-3">
-  <div class="container">Сделано в СЭЛФ, 2022 г.</div>
+<footer class="fixed-bottom mt-auto py-4">
+  СЭЛФ, 2022 г.
+  <a class="nav-link" href="https://github.com/paw1a/zeeman">Github</a>
 </footer>
 
 <style>
-  footer {
-      text-align: center;
-      background-color: #f5f5f5;
-  }
+    footer {
+        text-align: center;
+        background-color: #f5f5f5;
+    }
 </style>

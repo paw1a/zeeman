@@ -1,5 +1,3 @@
-import axios, {AxiosRequestConfig} from "axios";
-
 type ZeemanAPIRequest = {
     resolution: number, // pix
     pictureSize: number, // mm
@@ -12,12 +10,6 @@ type ZeemanAPIRequest = {
 };
 
 export default function zeemanAPIRequest(dto: ZeemanAPIRequest) {
-    console.log("abc");
-    const config = {
-        headers: {
-            'Access-Control-Allow-Origin': '*'
-        },
-    };
     fetch(`http://localhost:8080/api/interferometer`, {
         method: "post",
         body: JSON.stringify(dto)
@@ -28,17 +20,3 @@ export default function zeemanAPIRequest(dto: ZeemanAPIRequest) {
             document.getElementById("aaa").setAttribute("src", img);
         }).catch(err => console.error(err));
 };
-
-/*
-{
-    "resolution": 500,
-    "pictureSize": 3,
-    "waveLength": 632,
-    "focalDistance": 100,
-    "glassesDistance": 10,
-    "pathDifference": 0,
-    "refractionFactor": 1.375,
-    "reflectionFactor": 0.7,
-    "magneticInduction": 3
-}
- */
