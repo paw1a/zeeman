@@ -1,15 +1,17 @@
 package interferometer
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
 )
 
 const (
-	cm = 1e-2
-	mm = 1e-3
-	nm = 1e-9
+	cm            = 1e-2
+	mm            = 1e-3
+	nm            = 1e-9
+	lightVelocity = 2 * 1e8
 )
 
 type Params struct {
@@ -22,6 +24,7 @@ type Params struct {
 	RefractionFactor       float64
 	ReflectionFactor       float64
 	IncidentLightIntensity float64
+	MagneticInduction      float64
 }
 
 func CreateImage(params Params) *image.RGBA {
@@ -32,9 +35,32 @@ func CreateImage(params Params) *image.RGBA {
 		intensity[i] = make([]float64, params.Resolution)
 	}
 
+	frequency := lightVelocity / params.WaveLength
+	angleFrequency := 2 * math.Pi * frequency
+	larmorFrequency := (1.6 * math.Pow(10, -19) * params.MagneticInduction) / (2 * 9 * math.Pow(10, -31))
+
+	fmt.Println("///////////")
+	fmt.Println(params.WaveLength)
+	Draw(params, intensity)
+
+	frequency = (angleFrequency + larmorFrequency) / (2 * math.Pi)
+	params.WaveLength = lightVelocity / frequency
+
+	fmt.Println(params.WaveLength)
+	Draw(params, intensity)
+
+	frequency = (angleFrequency - larmorFrequency) / (2 * math.Pi)
+	params.WaveLength = lightVelocity / frequency
+
+	fmt.Println(params.WaveLength)
+	Draw(params, intensity)
+
+	return imageFromIntensity(intensity)
+}
+
+func Draw(params Params, intensity [][]float64) {
 	waveK := 2 * math.Pi / params.WaveLength
-	newWaveK := 2 * math.Pi / (params.WaveLength + params.PathDifference)
-	fineness := 4 * params.ReflectionFactor / math.Pow(1-params.RefractionFactor, 2)
+	fineness := 4 * params.RefractionFactor / math.Pow(1-params.RefractionFactor, 2)
 
 	step := params.PictureSize / float64(params.Resolution) / mm
 	for i := 0; i < params.Resolution; i++ {
@@ -53,16 +79,10 @@ func CreateImage(params Params) *image.RGBA {
 				params.GlassesDistance * math.Cos(theta)
 			lightIntensity := params.IncidentLightIntensity /
 				(1 + fineness*math.Pow(math.Sin(delta/2), 2))
-			delta = 2 * newWaveK * params.RefractionFactor *
-				params.GlassesDistance * math.Cos(theta)
-			lightIntensity += params.IncidentLightIntensity /
-				(1 + fineness*math.Pow(math.Sin(delta/2), 2))
 
-			intensity[i][j] = lightIntensity
+			intensity[i][j] += lightIntensity
 		}
 	}
-
-	return imageFromIntensity(intensity)
 }
 
 func normalizeParams(params *Params) {
