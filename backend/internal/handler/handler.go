@@ -17,14 +17,15 @@ type GetImageResponse struct {
 }
 
 type GetImageRequest struct {
-	Resolution       int     `json:"resolution" validate:"required,min=1"`
-	PictureSize      float64 `json:"pictureSize" validate:"required,min=0"`
-	WaveLength       float64 `json:"waveLength" validate:"required,min=0"`
-	FocalDistance    float64 `json:"focalDistance" validate:"required,min=0"`
-	GlassesDistance  float64 `json:"glassesDistance" validate:"required,min=0"`
-	PathDifference   float64 `json:"pathDifference" validate:"min=0"`
-	RefractionFactor float64 `json:"refractionFactor" validate:"required,min=1"`
-	ReflectionFactor float64 `json:"reflectionFactor" validate:"required,min=0,max=1"`
+	Resolution        int     `json:"resolution" validate:"required,min=1"`
+	PictureSize       float64 `json:"pictureSize" validate:"required,min=0"`
+	WaveLength        float64 `json:"waveLength" validate:"required,min=0"`
+	FocalDistance     float64 `json:"focalDistance" validate:"required,min=0"`
+	GlassesDistance   float64 `json:"glassesDistance" validate:"required,min=0"`
+	PathDifference    float64 `json:"pathDifference" validate:"min=0"`
+	RefractionFactor  float64 `json:"refractionFactor" validate:"required,min=1"`
+	ReflectionFactor  float64 `json:"reflectionFactor" validate:"required,min=0,max=1"`
+	MagneticInduction float64 `json:"magneticInduction" validate:"required"`
 }
 
 func GetImage(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +92,7 @@ func requestToParams(request GetImageRequest) interferometer.Params {
 		PathDifference:         request.PathDifference,
 		RefractionFactor:       request.RefractionFactor,
 		ReflectionFactor:       request.ReflectionFactor,
-		IncidentLightIntensity: 10,
+		MagneticInduction:      request.MagneticInduction,
+		IncidentLightIntensity: 1,
 	}
 }
