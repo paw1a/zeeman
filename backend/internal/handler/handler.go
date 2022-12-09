@@ -17,15 +17,15 @@ type GetImageResponse struct {
 }
 
 type GetImageRequest struct {
-	Resolution        int     `json:"resolution" validate:"required,min=1"`
-	PictureSize       float64 `json:"pictureSize" validate:"required,min=0"`
-	WaveLength        float64 `json:"waveLength" validate:"required,min=0"`
-	FocalDistance     float64 `json:"focalDistance" validate:"required,min=0"`
-	GlassesDistance   float64 `json:"glassesDistance" validate:"required,min=0"`
-	PathDifference    float64 `json:"pathDifference" validate:"min=0"`
-	RefractionFactor  float64 `json:"refractionFactor" validate:"required,min=1"`
-	ReflectionFactor  float64 `json:"reflectionFactor" validate:"required,min=0,max=1"`
-	MagneticInduction float64 `json:"magneticInduction" validate:"required"`
+	Resolution             int                           `json:"resolution" validate:"required,min=1"`
+	PictureSize            float64                       `json:"pictureSize" validate:"required,min=0"`
+	WaveLength             float64                       `json:"waveLength" validate:"min=0"`
+	FocalDistance          float64                       `json:"focalDistance" validate:"min=0"`
+	GlassesDistance        float64                       `json:"glassesDistance" validate:"min=0"`
+	PathDifference         float64                       `json:"pathDifference" validate:"min=0"`
+	RefractionFactor       float64                       `json:"refractionFactor" validate:"required,min=1"`
+	MagneticInduction      float64                       `json:"magneticInduction" validate:"omitempty,min=0"`
+	MagneticFieldDirection interferometer.FieldDirection `json:"magneticFieldDirection" validate:"omitempty,eq=1|eq=2"`
 }
 
 func GetImage(w http.ResponseWriter, r *http.Request) {
@@ -57,12 +57,16 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	img := interferometer.CreateImage(requestToParams(request))
+	img, err := interferometer.CreateImage(requestToParams(request))
+	if err != nil {
+		errorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
 
 	buffer := new(bytes.Buffer)
 	err = png.Encode(buffer, img)
 	if err != nil {
-		fmt.Printf("can't encode image pixels")
+		errorResponse(w, fmt.Errorf("can't encode image pixels"), http.StatusInternalServerError)
 		return
 	}
 	data := buffer.Bytes()
@@ -91,8 +95,7 @@ func requestToParams(request GetImageRequest) interferometer.Params {
 		GlassesDistance:        request.GlassesDistance,
 		PathDifference:         request.PathDifference,
 		RefractionFactor:       request.RefractionFactor,
-		ReflectionFactor:       request.ReflectionFactor,
 		MagneticInduction:      request.MagneticInduction,
-		IncidentLightIntensity: 1,
+		MagneticFieldDirection: request.MagneticFieldDirection,
 	}
 }

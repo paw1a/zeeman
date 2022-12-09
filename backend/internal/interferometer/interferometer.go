@@ -1,17 +1,28 @@
 package interferometer
 
 import (
-	"fmt"
+	"errors"
 	"image"
 	"image/color"
 	"math"
 )
 
+var (
+	errNegativeWaveLength = errors.New("magnetic induction is invalid")
+)
+
+type FieldDirection int
+
 const (
-	cm            = 1e-2
+	Disabled      FieldDirection = 0
+	Parallel                     = 1
+	Perpendicular                = 2
+)
+
+const (
 	mm            = 1e-3
 	nm            = 1e-9
-	lightVelocity = 2 * 1e8
+	lightVelocity = 3 * 1e8
 )
 
 type Params struct {
@@ -22,12 +33,11 @@ type Params struct {
 	GlassesDistance        float64
 	PathDifference         float64
 	RefractionFactor       float64
-	ReflectionFactor       float64
-	IncidentLightIntensity float64
 	MagneticInduction      float64
+	MagneticFieldDirection FieldDirection
 }
 
-func CreateImage(params Params) *image.RGBA {
+func CreateImage(params Params) (*image.RGBA, error) {
 	normalizeParams(&params)
 
 	intensity := make([][]float64, params.Resolution)
@@ -35,30 +45,47 @@ func CreateImage(params Params) *image.RGBA {
 		intensity[i] = make([]float64, params.Resolution)
 	}
 
-	frequency := lightVelocity / params.WaveLength
-	angleFrequency := 2 * math.Pi * frequency
-	larmorFrequency := (1.6 * math.Pow(10, -19) * params.MagneticInduction) / (2 * 9 * math.Pow(10, -31))
+	paramsArray, err := applyMagneticField(params)
+	if err != nil {
+		return nil, err
+	}
 
-	fmt.Println("///////////")
-	fmt.Println(params.WaveLength)
-	Draw(params, intensity)
+	for _, params := range paramsArray {
+		draw(params, intensity)
+	}
 
-	frequency = (angleFrequency + larmorFrequency) / (2 * math.Pi)
-	params.WaveLength = lightVelocity / frequency
-
-	fmt.Println(params.WaveLength)
-	Draw(params, intensity)
-
-	frequency = (angleFrequency - larmorFrequency) / (2 * math.Pi)
-	params.WaveLength = lightVelocity / frequency
-
-	fmt.Println(params.WaveLength)
-	Draw(params, intensity)
-
-	return imageFromIntensity(intensity)
+	return imageFromIntensity(intensity), nil
 }
 
-func Draw(params Params, intensity [][]float64) {
+func applyMagneticField(params Params) ([]Params, error) {
+	paramsArray := []Params{params}
+
+	frequency := lightVelocity / params.WaveLength
+	angleFrequency := 2 * math.Pi * frequency
+	larmorFrequency := (1.6 * math.Pow(10, -19) * params.MagneticInduction) /
+		(2 * 9 * math.Pow(10, -31))
+
+	if params.MagneticFieldDirection != Disabled {
+		frequency = (angleFrequency + larmorFrequency) / (2 * math.Pi)
+		params.WaveLength = lightVelocity / frequency
+
+		paramsArray = append(paramsArray, params)
+	}
+
+	if params.MagneticFieldDirection == Perpendicular {
+		frequency = (angleFrequency - larmorFrequency) / (2 * math.Pi)
+		params.WaveLength = lightVelocity / frequency
+		if params.WaveLength < 0 {
+			return nil, errNegativeWaveLength
+		}
+
+		paramsArray = append(paramsArray, params)
+	}
+
+	return paramsArray, nil
+}
+
+func draw(params Params, intensity [][]float64) {
 	waveK := 2 * math.Pi / params.WaveLength
 	fineness := 4 * params.RefractionFactor / math.Pow(1-params.RefractionFactor, 2)
 
@@ -77,21 +104,11 @@ func Draw(params Params, intensity [][]float64) {
 			var delta float64
 			delta = 2 * waveK * params.RefractionFactor *
 				params.GlassesDistance * math.Cos(theta)
-			lightIntensity := params.IncidentLightIntensity /
-				(1 + fineness*math.Pow(math.Sin(delta/2), 2))
+			lightIntensity := 1 / (1 + fineness*math.Pow(math.Sin(delta/2), 2))
 
 			intensity[i][j] += lightIntensity
 		}
 	}
-}
-
-func normalizeParams(params *Params) {
-	params.PictureSize *= mm
-	params.WaveLength *= nm
-	params.FocalDistance *= mm
-	params.GlassesDistance *= mm
-	params.PathDifference *= nm
-	params.IncidentLightIntensity /= cm * cm
 }
 
 func imageFromIntensity(intensity [][]float64) *image.RGBA {
@@ -126,4 +143,12 @@ func matrixMinMax(matrix [][]float64) (float64, float64) {
 	}
 
 	return min, max
+}
+
+func normalizeParams(params *Params) {
+	params.PictureSize *= mm
+	params.WaveLength *= nm
+	params.FocalDistance *= mm
+	params.GlassesDistance *= mm
+	params.PathDifference *= nm
 }
