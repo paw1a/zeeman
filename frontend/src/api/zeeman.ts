@@ -1,3 +1,9 @@
+export enum MagneticFieldDir {
+    Parallel,
+    Perpendicular
+};
+
+
 type ZeemanAPIRequest = {
     resolution: number, // pix
     pictureSize: number, // mm

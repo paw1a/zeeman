@@ -1,6 +1,7 @@
-<script>
-    import {form, field} from 'svelte-forms';
-    import {required, min} from 'svelte-forms/validators';
+<script lang="ts">
+    import {field, form} from 'svelte-forms';
+    import {min, required} from 'svelte-forms/validators';
+    import {MagneticFieldDir} from "../api/zeeman";
 
     const resolution = field("resolution", "500", [required(), min(1)]);
     const pictureSize = field("pictureSize", "5", [required(), min(1)]);
@@ -11,12 +12,35 @@
     const refractionFactor = field("refractionFactor", "1.375", [required(), min(1)]);
     const magneticInduction = field("magneticInduction", "3", [required(), min(0)]);
 
+    let magneticFieldDir = MagneticFieldDir.Parallel;
+
     const zeemanForm = form(resolution, pictureSize, waveLength, focalDistance, glassesDistance,
         pathDifference, refractionFactor, magneticInduction);
 
-      const submitForm = e => {
-          zeemanForm.validate();
-      };
+    const submitForm = e => {
+        zeemanForm.validate();
+    };
+
+    const getDir = () => {
+        console.log(magneticFieldDir);
+        if (magneticFieldDir == MagneticFieldDir.Parallel) {
+            return true;
+        } else if (magneticFieldDir == MagneticFieldDir.Perpendicular) {
+            return false;
+        } else {
+            console.error("Unexpected dir:", magneticFieldDir);
+        }
+    };
+
+    const getMagneticPerpendicular = () => {
+        console.log("perp", getDir());
+        return !getDir() ? "active" : "";
+    };
+
+    const getMagneticParallel = () => {
+        console.log("par", getDir());
+        return getDir() ? "active" : "";
+    };
 </script>
 
 <div class="col-md-4 order-md-2">
@@ -66,11 +90,19 @@
     <div class="mb-3">
       <label>Направление магнитного поля</label>
       <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary active">
-          <input class="magnetic-dir" type="radio" name="options" id="magneticFieldPar" autocomplete="off" checked>Параллельно
-        </label>
-        <label class="btn btn-secondary">
-          <input class="magnetic-dir" type="radio" name="options" id="magneticFieldPer" autocomplete="off">Перпендикулярно
+        <input class="btn-check magnetic-dir" type="radio" name="options" autocomplete="off"
+               bind:group={magneticFieldDir} value={MagneticFieldDir.Parallel}
+        id="dirParallel">
+        <label class="btn btn-secondary" for="dirParallel">
+
+          Параллельно</label>
+
+        <input class="btn-check magnetic-dir" type="radio" name="options" autocomplete="off"
+               bind:group={magneticFieldDir} value={MagneticFieldDir.Perpendicular}
+              id="dirPerp">
+
+        <label class="btn btn-secondary" for="dirPerp">
+          Перпендикулярно
         </label>
       </div>
     </div>
@@ -80,7 +112,7 @@
 </div>
 
 <style>
-  .magnetic-dir {
-      appearance: none;
-  }
+    .magnetic-dir {
+        appearance: none;
+    }
 </style>
