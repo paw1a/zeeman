@@ -3,7 +3,6 @@ export enum MagneticFieldDir {
     Perpendicular
 };
 
-
 type ZeemanAPIRequest = {
     resolution: number, // pix
     pictureSize: number, // mm
@@ -12,7 +11,8 @@ type ZeemanAPIRequest = {
     glassesDistance: number,
     pathDifference: number,
     refractionFactor: number,
-    magneticInduction: number
+    magneticInduction: number,
+    magneticFieldDirection: number
 };
 
 export default function zeemanAPIRequest(dto: ZeemanAPIRequest) {
@@ -23,6 +23,6 @@ export default function zeemanAPIRequest(dto: ZeemanAPIRequest) {
         .then(resp => {
             console.log(resp);
             let img = URL.createObjectURL(resp);
-            document.getElementById("aaa").setAttribute("src", img);
+            document.getElementById("picture-view").setAttribute("src", img);
         }).catch(err => console.error(err));
 };

@@ -1,13 +1,16 @@
+<svelte:options accessors={true}/>
+
 <script>
     import {createFieldValidator, requiredValidator} from "../lib/validator.ts";
 
     export let id;
     export let name;
     export let error;
+    export let init;
 
     const [validity, validate] = createFieldValidator(requiredValidator());
 
-    let value = "";
+    export let value = init;
 </script>
 
 <div class="mb-3">
@@ -20,6 +23,7 @@
          bind:value={value}
          use:validate={value}
   />
+
   {#if !$validity.valid}
       <div class="invalid-feedback">
         {error}
