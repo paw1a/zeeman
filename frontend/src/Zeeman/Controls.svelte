@@ -43,12 +43,12 @@
     <div class="mb-3">
       <label>Направление магнитного поля</label>
       <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <input class="btn-check magnetic-dir" type="radio" name="options" autocomplete="off"
+        <input class="btn-check" type="radio" name="options" autocomplete="off"
                bind:group={magneticFieldDir} value={MagneticFieldDir.Parallel}
                id="dirParallel">
         <label class="btn btn-secondary" for="dirParallel">Параллельно</label>
 
-        <input class="btn-check magnetic-dir" type="radio" name="options" autocomplete="off"
+        <input class="btn-check" type="radio" name="options" autocomplete="off"
                bind:group={magneticFieldDir} value={MagneticFieldDir.Perpendicular}
                id="dirPerp">
         <label class="btn btn-secondary" for="dirPerp">Перпендикулярно</label>
@@ -57,9 +57,3 @@
     <input type="submit" class="btn btn-primary" value="Показать результат"/>
   </form>
 </div>
-
-<style>
-    .magnetic-dir {
-        appearance: none;
-    }
-</style>
