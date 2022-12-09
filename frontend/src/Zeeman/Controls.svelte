@@ -5,9 +5,7 @@
 
     let magneticFieldDir = MagneticFieldDir.Parallel;
 
-    let wasValidated = false;
     let params = {};
-
     const submitForm = e => {
         let data = {};
         for (let param in params) {
