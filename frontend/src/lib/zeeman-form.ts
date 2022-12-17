@@ -17,43 +17,37 @@ export const parameters: Parameter[] = [
     {
         id: "pictureSize",
         name: "Размер пленки",
-        error: "Размер пленки",
+        error: "Введите правильный размер пленки",
         init: "3"
     },
     {
         id: "waveLength",
         name: "Длина волны",
-        error: "Размер пленки",
+        error: "Введите правильную длину волны",
         init: "632"
     },
     {
         id: "focalDistance",
         name: "Фокусное расстояние",
-        error: "Размер пленки",
+        error: "Введите правильное фокусное расстояние",
         init: "100"
     },
     {
         id: "glassesDistance",
         name: "Расстояние между линзами",
-        error: "Размер пленки",
+        error: "Введите правильное расстояние между линзами",
         init: "10"
-    },
-    {
-        id: "pathDifference",
-        name: "Разность хода",
-        error: "Размер пленки",
-        init: "0"
     },
     {
         id: "refractionFactor",
         name: "Коэффициент преломления",
-        error: "Размер пленки",
+        error: "Введите правильный коэффициент преломления",
         init: "1.375"
     },
     {
         id: "magneticInduction",
         name: "Магнитная индукция",
-        error: "Размер пленки",
+        error: "Введите правильную магнитную индукцию",
         init: "4"
     },
 ];
