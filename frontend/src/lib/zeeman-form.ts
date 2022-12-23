@@ -10,31 +10,31 @@ export type Parameter = {
 export const parameters: Parameter[] = [
     {
         id: "resolution",
-        name: "Разрешение изображения",
+        name: "Разрешение изображения, пкс",
         error: "Введите правильное разрешение",
         init: "500"
     },
     {
         id: "pictureSize",
-        name: "Размер пленки",
+        name: "Размер пленки, мм",
         error: "Введите правильный размер пленки",
         init: "3"
     },
     {
         id: "waveLength",
-        name: "Длина волны",
+        name: "Длина волны, нм",
         error: "Введите правильную длину волны",
         init: "632"
     },
     {
         id: "focalDistance",
-        name: "Фокусное расстояние",
+        name: "Фокусное расстояние, мм",
         error: "Введите правильное фокусное расстояние",
         init: "100"
     },
     {
         id: "glassesDistance",
-        name: "Расстояние между линзами",
+        name: "Расстояние между линзами, мм",
         error: "Введите правильное расстояние между линзами",
         init: "10"
     },
@@ -46,7 +46,7 @@ export const parameters: Parameter[] = [
     },
     {
         id: "magneticInduction",
-        name: "Магнитная индукция",
+        name: "Магнитная индукция, мТл",
         error: "Введите правильную магнитную индукцию",
         init: "4"
     },
