@@ -1,7 +1,7 @@
 export enum MagneticFieldDir {
     Parallel,
     Perpendicular
-};
+}
 
 type ZeemanAPIRequest = {
     resolution: number, // pix
@@ -15,8 +15,10 @@ type ZeemanAPIRequest = {
     magneticFieldDirection: number
 };
 
+const HOST = 'localhost'
+
 export default function zeemanAPIRequest(dto: ZeemanAPIRequest) {
-    fetch(`http://localhost:8080/api/interferometer`, {
+    fetch('http://' + HOST + ':8080/api/interferometer', {
         method: "post",
         body: JSON.stringify(dto)
     }).then(resp => resp.blob())

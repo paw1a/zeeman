@@ -42,7 +42,7 @@ export const parameters: Parameter[] = [
         id: "refractionFactor",
         name: "Коэффициент преломления",
         error: "Введите правильный коэффициент преломления",
-        init: "1.375"
+        init: "0.5"
     },
     {
         id: "magneticInduction",

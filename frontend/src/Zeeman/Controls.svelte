@@ -6,7 +6,7 @@
     let magneticFieldDir = MagneticFieldDir.Parallel;
 
     let params = {};
-    const submitForm = e => {
+    const submitForm = () => {
         let data = {};
         for (let param in params) {
             data[param] = params[param].value;
@@ -27,31 +27,33 @@
     };
 </script>
 
-<div class="col-md-4 order-md-2">
-  <h4 style="margin-top: 2rem;">Параметры эксперимента</h4>
+<div class="col-lg-4 order-md-2">
+	<h4 style="margin-top: 2rem;">Параметры эксперимента</h4>
 
-  <form class="needs-validation"
-        novalidate=""
-        on:submit|preventDefault={submitForm}
-  >
-    {#each parameters as param }
-      <FormInput id="{param.id}" name="{param.name}" error="{param.error}" init="{param.init}"
-                 bind:this={params[param.id]}/>
-    {/each}
-    <div class="mb-3">
-      <label>Направление магнитного поля</label>
-      <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <input class="btn-check" type="radio" name="options" autocomplete="off"
-               bind:group={magneticFieldDir} value={MagneticFieldDir.Parallel}
-               id="dirParallel">
-        <label class="btn btn-secondary" for="dirParallel">Параллельно</label>
+	<form class="needs-validation"
+	      novalidate=""
+	      on:submit|preventDefault={submitForm}
+	>
+		{#each parameters as param }
+			<FormInput id="{param.id}" name="{param.name}" error="{param.error}" init="{param.init}"
+			           bind:this={params[param.id]}/>
+		{/each}
+		<div>
+			<div>
+				<label class="mb-1">Направление магнитного поля</label>
+			</div>
+			<div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+				<input class="btn-check" type="radio" name="options" autocomplete="off"
+				       bind:group={magneticFieldDir} value={MagneticFieldDir.Parallel}
+				       id="dirParallel">
+				<label class="btn btn-secondary" for="dirParallel">Параллельно</label>
 
-        <input class="btn-check" type="radio" name="options" autocomplete="off"
-               bind:group={magneticFieldDir} value={MagneticFieldDir.Perpendicular}
-               id="dirPerp">
-        <label class="btn btn-secondary" for="dirPerp">Перпендикулярно</label>
-      </div>
-    </div>
-    <input type="submit" class="btn btn-primary" value="Показать результат"/>
-  </form>
+				<input class="btn-check" type="radio" name="options" autocomplete="off"
+				       bind:group={magneticFieldDir} value={MagneticFieldDir.Perpendicular}
+				       id="dirPerp">
+				<label class="btn btn-secondary" for="dirPerp">Перпендикулярно</label>
+			</div>
+		</div>
+		<input type="submit" class="btn btn-primary" value="Показать результат"/>
+	</form>
 </div>

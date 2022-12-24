@@ -23,7 +23,7 @@ type GetImageRequest struct {
 	FocalDistance          float64                       `json:"focalDistance" validate:"min=0"`
 	GlassesDistance        float64                       `json:"glassesDistance" validate:"min=0"`
 	PathDifference         float64                       `json:"pathDifference" validate:"min=0"`
-	RefractionFactor       float64                       `json:"refractionFactor" validate:"required,min=1"`
+	RefractionFactor       float64                       `json:"refractionFactor" validate:"required,min=0,max=1"`
 	MagneticInduction      float64                       `json:"magneticInduction" validate:"omitempty,min=0"`
 	MagneticFieldDirection interferometer.FieldDirection `json:"magneticFieldDirection" validate:"omitempty,eq=1|eq=2"`
 }
